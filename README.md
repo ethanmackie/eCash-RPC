@@ -1,26 +1,23 @@
-# Bitcoin Cash JSON-RPC library
+# eCash JSON-RPC library
 
-## Javascript Library to communicate with your Bitcoin Unlimited / Bitcoin ABC / Bitcoin Classic Node.
+## Javascript Library to communicate with your Bitcoin ABC Node.
 
-![header](https://user-images.githubusercontent.com/5941389/30766133-0cb8e34e-9fa8-11e7-8c8b-3b7867ad42ba.jpg)
-
-This is a promise-based library and `async/await` compatible. Includes a couple
-additional helpers, such as a QRcode generator as well as Bitpay's Address
-translator. Supports both address formats.
+Compatible with Avalanche Post-Consensus (0.26.1 and later).
+This is a promise-based library and `async/await` compatible.
 
 ## Installation
 
 grab from NPM
 
 ```
-  npm i bitcoin-cash-rpc
+  npm i ecash-rpc
 ```
 
 ## Usage
 
 ```
-let bchRPC = require("bitcoin-cash-rpc");
-let bch = new bchRPC(host, username, password, port, timeout, debugging);
+let xecRPC = require("ecash-rpc");
+let xec = new xecRPC(host, username, password, port, timeout, debugging);
 
 // timeout is 3000 by default
 // debugging is true by default, false makes the library silent and requires try/catch on the app level.
@@ -29,36 +26,43 @@ let bch = new bchRPC(host, username, password, port, timeout, debugging);
 ```
 
 ```
- let info = await bch.getInfo();
+ let info = await xec.getAvalancheInfo();
 
  console.log(info)
 
  // results in
- //{
- //  "version": 1010101,
- //  "protocolversion": 80003,
- //  "walletversion": 60000,
- //  "balance": 0.00000000,
- //  "blocks": 478559,
- //  "timeoffset": 0,
- //  "connections": 12,
- //  "proxy": "",
- //  "difficulty": 29829733124.04042,
- //  "testnet": false,
- //  "keypoololdest": 1506057198,
- //  "keypoolsize": 100,
- //  "paytxfee": 0.00000000,
- //  "relayfee": 0.00001000,
- //  "errors": "",
- //  "fork": "Bitcoin Cash"
- //}
-
+ // {
+ //  "ready_to_poll":true,
+ //  "local":{
+ //     "verified":true,
+ //     "proofid":"...",
+ //     "limited_proofid":"...",
+ //     "master":"...",
+ //     "payout_address":"ecash:qqmd..........",
+ //     "stake_amount":1560000000
+ //  },
+ //  "network":{
+ //     "proof_count":18,
+ //     "connected_proof_count":18,
+ //     "dangling_proof_count":0,
+ //     "finalized_proof_count":18,
+ //     "conflicting_proof_count":0,
+ //     "immature_proof_count":4,
+ //     "total_stake_amount":83681202831.85,
+ //     "connected_stake_amount":83681202831.85,
+ //     "dangling_stake_amount":0,
+ //     "node_count":37,
+ //     "connected_node_count":33,
+ //     "pending_node_count":4
+ //  }
+ // }
+ 
 ```
 
 or
 
 ```
- p = Promise.resolve(bch.getInfo());
+ p = Promise.resolve(xec.getAvalancheInfo());
  p.then(info=>{
     console.log(info);
  })
@@ -66,14 +70,14 @@ or
 
 ## Available Methods
 
-there is incomplete coverage at the moment. Please submit a PR if you'd like to
+There is only selected RPC coverage at the moment. Please submit a PR if you'd like to
 have a method added.
 
-`getInfo` `getBlockCount` `getWalletInfo` `getUnconfirmedBalance` `getBalance`
-`getWalletInfo` `getBlockHash` `getNewAddress` `setTxFee` `validateAddress`
-`sendToAddress` `sendFrom` `getAccountAddress` `getBlock` `getTxOut`
-`listTransactions` `listUnspent` `estimateSmartFee` `getTransaction`
-`getRawTransaction` `getRawMempool` `getRawChangeAddress` `signRawTransaction`
+`getAvalancheInfo` `buildAvalancheProof` `decodeAvalancheProof`
+`getAvalanchePeerInfo` `getRawAvalancheProof` `verifyAvalancheProof`
+`getBlockchainInfo` `getBlockCount` `getWalletInfo` `getUnconfirmedBalance` `getBalance` `getBlockCount` `getWalletInfo` `getBlockHash` `setTxFee` 
+`getBlock` `getTxOut` `listTransactions` `listUnspent` `getTransaction`
+`getRawTransaction` `getRawMempool` `signRawTransaction` 
 `sendRawTransaction` `decodeRawTransaction` `getTxoutProof`
 
 ## Compatible Node Implementations
@@ -82,8 +86,4 @@ You must be running a Node (Pruned mode is fine)
 
 [Bitcoin ABC](https://www.bitcoinabc.org/)
 
-[Bitcoin XT ](https://bitcoinxt.software/)
-
-[Bitcoin Unlimited (Cash)](https://www.bitcoinunlimited.info/)
-
-### Tested on Node v7.10, and npm v5.4.1
+### Tested on Node v16.17.0, NPM v8.19.1 and Bitcoin ABC 0.26.1

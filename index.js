@@ -1,6 +1,6 @@
 let axios = require('axios');
 
-class BitcoinCashRPC {
+class ECashRPC {
   constructor(
     host,
     username,
@@ -52,7 +52,7 @@ class BitcoinCashRPC {
     }
     let req = {
       method: 'POST',
-      url: `http://${this.host}:${this.port}/`,
+      url: `https://${this.host}:${this.port}/`,
       auth: { username: `${this.username}`, password: `${this.password}` },
       headers: {
         'Content-Type': 'text/plain'
@@ -93,13 +93,62 @@ class BitcoinCashRPC {
   }
 
   /**
-   * @return estimated transaction fee with parameter for number of blocks
+   * @return {Object} Returns an object containing various state info regarding avalanche networking.
    */
-  async estimateSmartFee(...params) {
-    let req = await this.performMethod('estimateSmartFee', ...params);
+  async getAvalancheInfo() {
+    let req = await this.performMethod('getavalancheinfo');
     return this.postRequest(req)
   }
 
+  /**
+   * @param sequence (numeric, required) The proof's sequence
+   * @param expiration (numeric, required) A timestamp indicating when the proof expire
+   * @param master (string, required) The master private key in base58-encoding
+   * @param stakes (json array, required) The stakes to be signed and associated private keys
+   * @param payoutAddress (string, required) A payout address
+   * @return {string} A string that is a serialized, hex-encoded proof data.
+   */
+  async buildAvalancheProof(...params) {
+    let req = await this.performMethod('buildavalancheproof', ...params);
+    return this.postRequest(req)
+  }
+  
+  /**
+   * @param proof    (string, required) The proof hex string
+   * @return {object} Convert a serialized, hex-encoded proof, into JSON object. The validity of the proof is not verified.
+   */
+  async decodeAvalancheProof(...params) {
+    let req = await this.performMethod('decodeavalancheproof', ...params);
+    return this.postRequest(req)
+  }
+  
+  /**
+   * @param proofid    (string) The hex encoded avalanche proof identifier.
+   * @return {object} Returns data about an avalanche peer as a json array of objects. If no proofid is provided, returns data about all the peers.
+   */
+  async getAvalanchePeerInfo(...params) {
+    let req = await this.performMethod('getavalanchepeerinfo', ...params);
+    return this.postRequest(req)
+  }
+
+  /**
+   * @param proofid    (string, required) The hex encoded avalanche proof identifier.
+   * @return {object} Returns data about an avalanche proof by id.
+   */
+  async getRawAvalancheProof(...params) {
+    let req = await this.performMethod('getrawavalancheproof', ...params);
+    return this.postRequest(req)
+  }
+
+  /**
+   * @param proof    (string, required) Proof to verify.
+   * @return {boolean} Whether the proof is valid or not.
+   */
+  async verifyAvalancheProof(...params) {
+    let req = await this.performMethod('verifyavalancheproof', ...params);
+    return this.postRequest(req)
+  }
+  
   /**
    * @param {Number} number of blocks needed to begin confirmation
    * @return estimated transaction fee per kilobyte
@@ -128,19 +177,11 @@ class BitcoinCashRPC {
   }
 
   /**
-   * @return {String} change address with bch prefix
-   */
-  async getRawChangeAddress() {
-    let req = await this.performMethod('getRawChangeAddress');
-    return this.postRequest(req)
-  }
-
-  /**
    * @param {String} RawTX transaction as a string
    * @return {Object} hex value of transaction and complete: true
    */
   async signRawTransaction(...params) {
-    let req = await this.performMethod('signRawTransaction', ...params);
+    let req = await this.performMethod('signrawtransactionwithkey', ...params);
     return this.postRequest(req)
   }
 
@@ -158,7 +199,7 @@ class BitcoinCashRPC {
   /**
    * @return {Object} array   version, walletversion, balance, block height, difficulty, tx fee
    */
-  async getInfo() {
+  async getBlockchainInfo() {
     let req = await this.performMethod('getBlockChainInfo');
     return this.postRequest(req)
   }
@@ -197,13 +238,13 @@ class BitcoinCashRPC {
   }
 
   /**
-   * @param {String}  account  name of account for new address
-   * @return {String}  address
+   * @return {Number} blockheight   Returns the height of the most-work fully-validated chain.
    */
-  async getNewAddress(...params) {
-    let req = await this.performMethod('getNewAddress', ...params);
+  async getBlockCount() {
+    let req = await this.performMethod('getblockcount');
     return this.postRequest(req)
   }
+  
   /**
    * @param {String} transaction id
    * @param {Boolean} verbose
@@ -240,59 +281,6 @@ class BitcoinCashRPC {
   }
 
   /**
-   * @param {String} Address   bitcoin address to be checked
-   * @return {Boolean}          whether address is valid
-   */
-  async validateAddress(...params) {
-    if (!this.isValidAddress(...params)) {
-      throw new Error('failed valid check');
-      return 'invalid address given';
-    }
-
-    let req = await this.performMethod('validateAddress', ...params);
-    return this.postRequest(req)
-  }
-
-  /**
-   * @param {String} Address   bitcoin address to send to
-   * @param {Number} Amount     number of bitcoin to send
-   * @return {String} Tx        returns the transaction ID
-   */
-  async sendToAddress(...params) {
-    // if (!this.isValidAddress(...params)) {
-    //   throw new Error('failed valid check');
-    //   return 'invalid address given';
-    // }
-
-    let req = await this.performMethod('sendToAddress', ...params);
-    return this.postRequest(req)
-  }
-
-  /**
-   * @param {String} account   bitcoind account to send from
-   * @param {String} address   bitcoin address to send to
-   * @param {Number} Amount     number of bitcoin to send
-   * @return {String} Tx        returns the transaction ID
-   */
-  async sendFrom(...params) {
-    // if (!this.isValidAddress(params[1])) {
-    //   throw new Error('failed valid check');
-    //   return 'invalid address given';
-    // }
-
-    let req = await this.performMethod('sendFrom', ...params);
-    return this.postRequest(req)
-  }
-
-  /**
-   * @param {String} accountName name of account you want the address for
-   * @return {String} address       returns the address
-   */
-  async getAccountAddress(...params) {
-    let req = await this.performMethod('getAccountAddress', ...params);
-    return this.postRequest(req)
-  }
-  /**
    * @param {String} blockhash
    * @return {obj} data       returns the block info
    */
@@ -309,6 +297,7 @@ class BitcoinCashRPC {
     let req = await this.performMethod('decodeRawTransaction', ...params);
     return this.postRequest(req)
   }
+  
   /**
    * @param {String} transaction_id
    * @param {Number} vout     use 1
@@ -318,6 +307,7 @@ class BitcoinCashRPC {
     let req = await this.performMethod('getTxOut', ...params);
     return this.postRequest(req)
   }
+  
   /**
    * @param {String} array of txids
    * @param {String} blockhash  looks for txid in block w/ this hash
@@ -327,6 +317,7 @@ class BitcoinCashRPC {
     let req = await this.performMethod('getTxoutProof', ...params);
     return this.postRequest(req)
   }
+  
   /**
    * @param {Boolean} verbose
    * @return {Object} array   txid
@@ -335,6 +326,7 @@ class BitcoinCashRPC {
     let req = await this.performMethod('getRawMempool', ...params);
     return this.postRequest(req)
   }
+  
   /**
    * @param {String} hexstring
    * @return {String} transaction ID
@@ -343,18 +335,6 @@ class BitcoinCashRPC {
     let req = await this.performMethod('sendRawTransaction', ...params);
     return this.postRequest(req)
   }
-
-  isValidAddress(...x) {
-    const test = '[13CH][a-km-zA-HJ-NP-Z0-9]{30,33}';
-    const cashRegEx = /^((?:bitcoincash):)?(?:[023456789acdefghjklmnpqrstuvwxyz]){42}$/gi;
-    let testRegEx = new RegExp(test, 'i');
-
-    if (testRegEx.test(x)) {
-      return testRegEx.test(x);
-    } else {
-      return cashRegEx.test(x);
-    }
-  }
 }
 
-module.exports = BitcoinCashRPC;
+module.exports = ECashRPC;
