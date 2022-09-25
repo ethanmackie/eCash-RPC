@@ -2,7 +2,10 @@
 
 ## Javascript Library to communicate with your Bitcoin ABC Node.
 
-Compatible with Avalanche Post-Consensus (0.26.1 and later).
+Compatible with **Avalanche Post-Consensus** (0.26.1 and later).
+
+![header](https://github.com/ethanmackie/eCash-RPC/blob/master/avalanchelogo.PNG)
+
 This is a promise-based library and `async/await` compatible.
 
 ## Installation
@@ -21,8 +24,6 @@ let xec = new xecRPC(host, username, password, port, timeout, debugging);
 
 // timeout is 3000 by default
 // debugging is true by default, false makes the library silent and requires try/catch on the app level.
-
-
 ```
 
 ```
