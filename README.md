@@ -1,6 +1,6 @@
 # eCash JSON-RPC library
 
-## Javascript Library to communicate with your Bitcoin ABC Node.
+## Javascript Library to communicate with your eCash Node.
 
 Compatible with **Avalanche Post-Consensus** (0.26.1 and later).
 
@@ -17,8 +17,8 @@ This is a promise-based library and `async/await` compatible.
 ```
 
 #### 2. Node configuration
-Configure your eCash Avalanche Node for remote RPC calls based on your security needs for your node. This includes:
-- add 'server=1', 'rpcallowip=', 'rpcbind=' and 'rpcauth/rpcuser/rpcpassword=' parameters to your node configuration in bitcoin.conf. (refer to the **Server Configuraion section** of [this Blockchain Dev guide](https://www.buildblockchain.tech/blog/btc-node-developers-guide))
+Configure your eCash Avalanche Node for remote RPC calls based on your node's security needs. This includes:
+- add `server=1`, `rpcallowip=`, `rpcbind=` and `rpcauth/rpcuser/rpcpassword=` parameters to your node configuration in bitcoin.conf. (refer to the **Server Configuration section** of [this Blockchain Dev guide](https://www.buildblockchain.tech/blog/btc-node-developers-guide))
 - a reverse proxy server such as [nginx](http://nginx.org/) to serve RPC data to external web apps subject to your eCash node's rpcallowip whitelist
 - install a digital certificate (e.g. [Let's Encrypt](https://letsencrypt.org)) on your node to enable HTTPS if desired
 
@@ -26,9 +26,9 @@ Configure your eCash Avalanche Node for remote RPC calls based on your security 
 ## Usage
 
 ```
-let xecRPC = require("ecash-rpc");
-let xec = new xecRPC(
-  host, // e.g. 'https://hostname.blah'
+let ECashRPC = require("ecash-rpc");
+let xecNode = new ECashRPC(
+  host, // your eCash node e.g. 'https://hostname.blah'
   username, // as per your node's bitcoin.conf
   password, // as per your node's bitcoin.conf
   port, // as per your node's default port
@@ -39,7 +39,7 @@ let xec = new xecRPC(
 ```
 
 ```
- let info = await xec.getAvalancheInfo();
+ let info = await xecNode.getAvalancheInfo();
 
  console.log(info)
 
@@ -75,7 +75,7 @@ let xec = new xecRPC(
 or
 
 ```
- p = Promise.resolve(xec.getAvalancheInfo());
+ p = Promise.resolve(xecNode.getAvalancheInfo());
  p.then(info=>{
     console.log(info);
  })
