@@ -52,7 +52,7 @@ class ECashRPC {
     }
     let req = {
       method: 'POST',
-      url: `https://${this.host}:${this.port}/`,
+      url: `${this.host}:${this.port}/`,
       auth: { username: `${this.username}`, password: `${this.password}` },
       headers: {
         'Content-Type': 'text/plain'
@@ -93,23 +93,36 @@ class ECashRPC {
   }
 
   /**
-   * @return {Object} Returns an object containing various state info regarding avalanche networking.
+   * @param nodeid        (numeric, required) Node to be added to avalanche.
+   * @param publickey     (string, required) The public key of the node.
+   * @param proof         (string, required) Proof that the node is not a sybil.
+   * @param delegation    (string) The proof delegation the the node public key
+   * @return {boolean}    (boolean) Whether the addition succeeded or not.
    */
-  async getAvalancheInfo() {
-    let req = await this.performMethod('getavalancheinfo');
+  async addAvalancheNode(...params) {
+    let req = await this.performMethod('addavalanchenode', ...params);
     return this.postRequest(req)
   }
 
   /**
-   * @param sequence (numeric, required) The proof's sequence
-   * @param expiration (numeric, required) A timestamp indicating when the proof expire
-   * @param master (string, required) The master private key in base58-encoding
-   * @param stakes (json array, required) The stakes to be signed and associated private keys
+   * @param sequence      (numeric, required) The proof's sequence
+   * @param expiration    (numeric, required) A timestamp indicating when the proof expire
+   * @param master        (string, required) The master private key in base58-encoding
+   * @param stakes        (json array, required) The stakes to be signed and associated private keys
    * @param payoutAddress (string, required) A payout address
-   * @return {string} A string that is a serialized, hex-encoded proof data.
+   * @return {string}     A string that is a serialized, hex-encoded proof data.
    */
   async buildAvalancheProof(...params) {
     let req = await this.performMethod('buildavalancheproof', ...params);
+    return this.postRequest(req)
+  }
+  
+  /**
+   * @param delegation    (string, required) The delegation hex string
+   * @return {object}     Converts a serialized, hex-encoded avalanche proof delegation, into JSON object. The validity of the delegation is not verified.
+   */
+  async decodeAvalancheDelegation(...params) {
+    let req = await this.performMethod('decodeavalanchedelegation', ...params);
     return this.postRequest(req)
   }
   
@@ -123,8 +136,36 @@ class ECashRPC {
   }
   
   /**
-   * @param proofid    (string) The hex encoded avalanche proof identifier.
-   * @return {object} Returns data about an avalanche peer as a json array of objects. If no proofid is provided, returns data about all the peers.
+   * @param limitedproofid    (string, required) The limited id of the proof to be delegated.
+   * @param privatekey        (string, required) The private key in base58-encoding. Must match the proof master public key or the upper level parent delegation public key if  supplied.
+   * @param publickey         (string, required) The public key to delegate the proof to.
+   * @param delegation        (string) A string that is the serialized, hex-encoded delegation for the proof and which is a parent for the delegation to build.
+   * @return {string}         (string) A hex string that is a serialized, hex-encoded delegation.
+   */
+  async delegateAvalancheProof(...params) {
+    let req = await this.performMethod('delegateavalancheproof', ...params);
+    return this.postRequest(req)
+  }
+  
+  /**
+   * @return {Object}   Returns an object containing various state info regarding avalanche networking.
+   */
+  async getAvalancheInfo() {
+    let req = await this.performMethod('getavalancheinfo');
+    return this.postRequest(req)
+  }
+  
+  /**
+   * @return {string}   Returns the key used to sign avalanche messages.
+   */
+  async getAvalancheKey() {
+    let req = await this.performMethod('getavalanchekey');
+    return this.postRequest(req)
+  }
+  
+  /**
+   * @param proofid     (string) The hex encoded avalanche proof identifier.
+   * @return {object}   Returns data about an avalanche peer as a json array of objects. If no proofid is provided, returns data about all the peers.
    */
   async getAvalanchePeerInfo(...params) {
     let req = await this.performMethod('getavalanchepeerinfo', ...params);
@@ -132,11 +173,48 @@ class ECashRPC {
   }
 
   /**
-   * @param proofid    (string, required) The hex encoded avalanche proof identifier.
-   * @return {object} Returns data about an avalanche proof by id.
+   * @param proofid     (string, required) The hex encoded avalanche proof identifier.
+   * @return {object}   Returns data about an avalanche proof by id.
    */
   async getRawAvalancheProof(...params) {
     let req = await this.performMethod('getrawavalancheproof', ...params);
+    return this.postRequest(req)
+  }
+
+  /**
+   * @param blockhash       (string, required) The hash of the block.
+   * @return {boolean}     (boolean) Whether the block has been finalized by avalanche votes.
+   */
+  async isFinalBlock(...params) {
+    let req = await this.performMethod('isfinalblock', ...params);
+    return this.postRequest(req)
+  }
+
+  /**
+   * @param txid         (string, required) The id of the transaction.
+   * @param blockhash    (string) The block in which to look for the transaction
+   * @return {boolean}   (boolean) Whether the transaction has been finalized by avalanche votes.
+   */
+  async isFinalTransaction(...params) {
+    let req = await this.performMethod('isfinaltransaction', ...params);
+    return this.postRequest(req)
+  }
+
+  /**
+   * @param proof         (string, required) The avalanche proof to broadcast.
+   * @return {boolean}   (boolean) Whether the proof was sent successfully or not.
+   */
+  async sendAvalancheProof(...params) {
+    let req = await this.performMethod('sendavalancheproof', ...params);
+    return this.postRequest(req)
+  }
+
+  /**
+   * @param delegation    (string, required) The avalanche proof delegation to verify.
+   * @return {boolean}    (boolean) Whether the delegation is valid or not.
+   */
+  async verifyAvalancheDelegation(...params) {
+    let req = await this.performMethod('verifyavalanchedelegation', ...params);
     return this.postRequest(req)
   }
 
@@ -186,7 +264,7 @@ class ECashRPC {
   }
 
   /**
-   * @param {String} Address  bch address
+   * @param {String} Address  XEC address
    * @param {String} Signature  signature
    * @param {String} Message  contents of message
    * @return {Boolean} whether it is valid

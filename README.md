@@ -10,20 +10,32 @@ This is a promise-based library and `async/await` compatible.
 
 ## Installation
 
-grab from NPM
+#### 1. Install from NPM
 
 ```
   npm i ecash-rpc
 ```
 
+#### 2. Node configuration
+Configure your eCash Avalanche Node for remote RPC calls based on your security needs for your node. This includes:
+- add 'server=1', 'rpcallowip=', 'rpcbind=' and 'rpcauth/rpcuser/rpcpassword=' parameters to your node configuration in bitcoin.conf. (refer to the **Server Configuraion section** of [this Blockchain Dev guide](https://www.buildblockchain.tech/blog/btc-node-developers-guide))
+- a reverse proxy server such as [nginx](http://nginx.org/) to serve RPC data to external web apps subject to your eCash node's rpcallowip whitelist
+- install a digital certificate (e.g. [Let's Encrypt](https://letsencrypt.org)) on your node to enable HTTPS if desired
+
+
 ## Usage
 
 ```
 let xecRPC = require("ecash-rpc");
-let xec = new xecRPC(host, username, password, port, timeout, debugging);
+let xec = new xecRPC(
+  host, // e.g. 'https://hostname.blah'
+  username, // as per your node's bitcoin.conf
+  password, // as per your node's bitcoin.conf
+  port, // as per your node's default port
+  timeout, // timeout is 3000 by default
+  debugging // debugging is true by default, false makes the library silent and requires try/catch on the app level.
+);
 
-// timeout is 3000 by default
-// debugging is true by default, false makes the library silent and requires try/catch on the app level.
 ```
 
 ```
@@ -72,14 +84,24 @@ or
 ## Available Methods
 
 There is only selected RPC coverage at the moment. Please submit a PR if you'd like to
-have a method added.
+have a specific RPC method added.
 
-`getAvalancheInfo` `buildAvalancheProof` `decodeAvalancheProof`
-`getAvalanchePeerInfo` `getRawAvalancheProof` `verifyAvalancheProof`
+`addAvalancheNode` `buildAvalancheProof` `decodeAvalancheDelegation` `decodeAvalancheProof` `delegateAvalancheProof` `getAvalancheInfo` 
+`getAvalancheKey`  `getAvalanchePeerInfo` `getRawAvalancheProof` 
+`isFinalBlock` `isFinalTransaction` `sendAvalancheProof` 
+`verifyavalanchedelegation` `verifyAvalancheProof`
+
 `getBlockchainInfo` `getBlockCount` `getWalletInfo` `getUnconfirmedBalance` `getBalance` `getBlockCount` `getWalletInfo` `getBlockHash` `setTxFee` 
 `getBlock` `getTxOut` `listTransactions` `listUnspent` `getTransaction`
 `getRawTransaction` `getRawMempool` `signRawTransaction` 
 `sendRawTransaction` `decodeRawTransaction` `getTxoutProof`
+
+## Troubleshooting
+
+#### Common errors: 
+- **Connection timeout:** your app is failing to communicate with your node. Check firewall settings and node configuration whitelists.
+- **Network errors:** these errors can be misleading - in most cases your app is connecting to your node however is likely failing authentication. Check your RPC authentication parameters or your reverse proxy server settings.
+- **CORS Policy errors:** your app is encountering Cross-Origin Resource Sharing restrictions e.g. you may be using your local dev instance on http://localhost:3000 to connect to your eCash node on a separate host (https://someip:someport) See [this article](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) and [nginx's headers module](http://nginx.org/en/docs/http/ngx_http_headers_module.html) on how to address this.
 
 ## Compatible Node Implementations
 
