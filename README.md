@@ -4,8 +4,6 @@
 
 Compatible with **Avalanche Post-Consensus** (0.26.1 and later).
 
-![header](https://github.com/ethanmackie/eCash-RPC/blob/master/avalanchelogo.PNG)
-
 This is a promise-based library and `async/await` compatible.
 
 ## Installation
