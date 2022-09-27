@@ -1,8 +1,8 @@
 # eCash JSON-RPC library
 
-## Javascript Library to communicate with your eCash Node.
+### JavaScript library to communicate with your eCash Node.
 
-Compatible with **Avalanche Post-Consensus** (0.26.1 and later).
+Compatible with **Avalanche Post-Consensus** (0.26.x and later).
 
 This is a promise-based library and `async/await` compatible.
 
@@ -16,7 +16,7 @@ This is a promise-based library and `async/await` compatible.
 
 #### 2. Node configuration
 Configure your eCash Avalanche Node for remote RPC calls based on your node's security needs. This includes:
-- add `server=1`, `rpcallowip=`, `rpcbind=` and `rpcauth/rpcuser/rpcpassword=` parameters to your node configuration in bitcoin.conf. (refer to the **Server Configuration section** of [this Blockchain Dev guide](https://www.buildblockchain.tech/blog/btc-node-developers-guide))
+- adding `server=1`, `rpcallowip=`, `rpcbind=` and `rpcauth/rpcuser/rpcpassword=` parameters to your node configuration in bitcoin.conf. (refer to the **Server Configuration section** of [this Blockchain Dev guide](https://www.buildblockchain.tech/blog/btc-node-developers-guide))
 - a reverse proxy server such as [nginx](http://nginx.org/) to serve RPC data to external web apps subject to your eCash node's rpcallowip whitelist
 - install a digital certificate (e.g. [Let's Encrypt](https://letsencrypt.org)) on your node to enable HTTPS if desired
 
@@ -27,9 +27,9 @@ Configure your eCash Avalanche Node for remote RPC calls based on your node's se
 let ECashRPC = require("ecash-rpc");
 let xecNode = new ECashRPC(
   host, // your eCash node e.g. 'https://hostname.blah'
-  username, // as per your node's bitcoin.conf
-  password, // as per your node's bitcoin.conf
-  port, // as per your node's default port
+  username,
+  password,
+  port,
   timeout, // timeout is 3000 by default
   debugging // debugging is true by default, false makes the library silent and requires try/catch on the app level.
 );
@@ -107,4 +107,4 @@ You must be running a Node (Pruned mode is fine)
 
 [Bitcoin ABC](https://www.bitcoinabc.org/)
 
-### Tested on Node v16.17.0, NPM v8.19.1 and Bitcoin ABC 0.26.1
+### Tested on Node v16.17.0, NPM v8.19.1 and Bitcoin ABC 0.26.2
